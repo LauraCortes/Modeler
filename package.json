@@ -1,0 +1,8 @@
+{
+  "name": "joint",
+  "version": "4.6.1",
+  "description": "modeler",
+  "dependencies": {
+    "jointjs": "^1.1.0"
+  }
+}
