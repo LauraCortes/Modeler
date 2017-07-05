@@ -1,12 +1,37 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="modeler">
 <head>
   <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+  <script src="node_modules/angular/angular.min.js"></script>
 </head>
 <body>
-  <div class="col-sm-10" id="myHolder"></div>
-  <div class="col-sm-2" id="panel">
+  <div class="row justify-content-center">
+    <div class="col-sm-10" id="myHolder"></div>
+    <div class="col-sm-2" id="panel"></div>
   </div>
   <script src="bundle.js"></script>
+  <section ng-controller="PropController as prop">
+    <ul class="nav nav-tabs nav-stacked col-sm-3">
+      <li ng-class="{active: prop.isSelected(1)}">
+        <a href ng-click="prop.selectTab(1)">Ports</a>
+      </li>
+      <li ng-class="{active: prop.isSelected(2)}">
+        <a href ng-click="prop.selectTab(2)">Properties</a>
+      </li>
+    </ul>
+    <div class="col-sm-9"ng-show="prop.isSelected(1)">
+      <table class="table table-hover" id="tabProperties">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Input</th>
+            <th>Output</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </section>
 </body>
 </html>

@@ -7,7 +7,6 @@ module.exports= function(graph){
   var size = $('#panel').width()/2,
       margin ={top:5, bottom:5, left:5, right:5};
 //Elementos básicos
-$('#v_3').append('<a data-toggle="collapse">Basic elements</a>');
   var circle = new joint.shapes.basic.Circle({
           position: { x: size/2, y:margin.top+size/2 },
           size: { width: size-margin.right-margin.left, height: size-margin.top-margin.bottom},
