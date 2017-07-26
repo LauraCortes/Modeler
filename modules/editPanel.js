@@ -3,20 +3,39 @@ module.exports= function(graph){
   var $ = require('jquery');
   var lodash = require('lodash');
   var backbone = require('backbone');
-
+  var ports=require('../modules/ports.js');
   var size = $('#panel').width()/2,
       margin ={top:5, bottom:5, left:5, right:5};
 //Elementos básicos
   var circle = new joint.shapes.basic.Circle({
           position: { x: size/2, y:margin.top+size/2 },
           size: { width: size-margin.right-margin.left, height: size-margin.top-margin.bottom},
-          attrs: { circle: { fill: '#F2F2F2', stroke:'#BDBDBD' }}
+          attrs: { circle: { fill: '#F2F2F2', stroke:'#000000' }},
+          ports: {
+            groups: {
+                'top': ports.topGroup,
+                'bottom':ports.bottomGroup,
+                'left':ports.leftGroup,
+                'right':ports.rightGroup
+            }
+        }
   }).addTo(graph);
+  circle.prop('type','p');
+  circle.prop('multiple','');
   var rectangle = new joint.shapes.basic.Rect({
           position: { x: size/2, y:2*margin.top+3*size/2 },
           size: { width: size-margin.right-margin.left, height: size-2*(margin.top+margin.bottom)},
-          attrs: { rect: { fill: '#F2F2F2', stroke:'#BDBDBD' }}
+          attrs: { rect: { fill: '#F2F2F2', stroke:'#000000' }},
+          ports: {
+            groups: {
+                'top': ports.topGroup,
+                'bottom':ports.bottomGroup,
+                'left':ports.leftGroup,
+                'right':ports.rightGroup
+            }
+          }
   }).addTo(graph);
+  rectangle.prop('type','a');
 //Relaciones
   var moneyLink= new joint.dia.Link({
         source:{x:margin.left,y:3*size+margin.top},
@@ -28,6 +47,7 @@ module.exports= function(graph){
             '<g class="marker-vertices"/>'
         ].join(''),
     }).addTo(graph);
+    moneyLink.prop('name','linkM');
 
   var valueLink= new joint.dia.Link({
         source:{x:margin.left,y:3*size+2*(margin.top+margin.bottom)},
@@ -51,10 +71,4 @@ module.exports= function(graph){
         ].join(''),
   }).addTo(graph);
 
-//Zona
-  var circle = new joint.shapes.basic.Circle({
-          position: { x: margin.left, y:4*size+margin.top},
-          size: { width: 2*size-margin.left-margin.right, height: 2*size-margin.top-margin.bottom},
-          attrs: { circle: { fill: '#F2F2F2', stroke:'#151515' }}
-  }).addTo(graph);
 };

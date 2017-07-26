@@ -4,7 +4,7 @@ var lodash = require('lodash');
 var backbone = require('backbone');
 var panel= require('./modules/editPanel.js');
 var properties = require('./modules/properties.js');
-var ports=require('./modules/ports.js');
+var props= require('./modules/props.js')
 
 properties();
 active = function(cellView){
@@ -72,31 +72,67 @@ paperEdit.on('cell:pointerclick', function(cellView,evt, x, y) {
 });
 
 var graph = new joint.dia.Graph;
+var json=$('#json');
+var data= "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(graph.toJSON()));
+json.attr("href","data:" + data );
+json.attr("download", "data.json");
 var paper= new joint.dia.Paper({
   el: $('#myHolder'),
   height: $( window ).height(),
   width: $('#myHolder').width(),
   padding:0,
   model: graph,
-  restrictTranslate: true,
+  restrictTranslate:true,
   embeddingMode: true
 });
+
+$('#svg').click(function(){
+  var svg = document.querySelector("svg");
+  var serializer = new XMLSerializer();
+  var string = serializer.serializeToString(svg);
+  console.log(string);
+  string = '<?xml version="1.0" standalone="no"?>\r\n' +string;
+  var url = "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(string);
+  $('#svg').attr("href","data:" +url);
+  $('#svg').attr("download", "data.svg");
+});
+
 paper.on('blank:pointerclick',function(evt,x,y){
   if(elementAdd){
     var obj = elementAdd.clone();
     if(obj.isElement()){
       obj.position(x,y);
       graph.addCell(obj);
+      data= "text/json;charset=utf-8," +encodeURIComponent(JSON.stringify(graph.toJSON()));
+      json.attr("href","data:" + data );
       obj.toFront();
-      obj.on('change:embeds',function(){obj.fitEmbeds({padding:10});});
     }
   }
 });
 
 var propElement;
+
+var select = function(cellView){
+  if(propElement){
+    unactive(propElement);
+    $("#tabAttributes #table tbody").empty();
+    $("#tabAttributes #addButton").empty();
+    $("#tabProperties #width").empty();
+    $("#tabProperties #height").empty();
+  }
+  if(propElement!=cellView){
+    props(cellView);
+    active(cellView);
+    propElement=cellView;
+  }
+  else {
+      propElement=null;
+  }
+}
 paper.on('cell:pointerclick',function(cellView,evt,x,y){
   if(elementAdd){
     if(elementAdd.isLink()){
+      console.log(elementAdd.attributes.name);
       if(!elementAdd.get('source').id){
         elementAdd.set('source',{id:cellView.model.id});
       }
@@ -104,32 +140,18 @@ paper.on('cell:pointerclick',function(cellView,evt,x,y){
         var finalLink=elementAdd.clone();
         finalLink.set('target',{id:cellView.model.id});
         graph.addCell(finalLink);
+        data= "text/json;charset=utf-8," +encodeURIComponent(JSON.stringify(graph.toJSON()));
+        json.attr("href","data:" + data );
         elementAdd.disconnect();
         finalLink.toFront();
+
       }
+    }
+    else {
+      select(cellView);
     }
   }
   else{
-    if(propElement){
-      unactive(propElement);
-      $("#tabProperties tbody").empty();
-    }
-    if(propElement!=cellView){
-      var newRowContent ="<tr><td>Value</td><td><input type='checkbox' id='inV'></td><td><input type='checkbox' id='outV'></td></tr>"+
-      "<tr><td>Money</td><td><input type='checkbox' id='inM'></td><td><input type='checkbox' id='outM'></td></tr>"+
-      "<tr><td>Mean</td><td><input type='checkbox' id='inE'></td><td><input type='checkbox' id='outE'></td></tr>";
-      $("#tabProperties tbody").append(newRowContent);
-      ports(cellView);
-      active(cellView);
-      propElement=cellView;
-    }
-    else {
-        $("#tabProperties tbody").empty();
-        propElement=null;
-    }
+    select(cellView);
   }
 });
-
-var addP = function(port, element){
-  element.model.addPort(port);
-};
